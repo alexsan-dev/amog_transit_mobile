@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/src/theme/ThemeProvider';
 import { useProfile } from '@/src/hooks/useProfile';
 import { useNotifications } from '@/src/hooks/useNotifications';
+import { useApiImage } from '@/src/hooks/useApiImage';
 
 interface AppHeaderProps {
   onProfilePress: () => void;
@@ -18,6 +19,7 @@ export function AppHeader({ onProfilePress, onNotificationsPress }: AppHeaderPro
   const { data: profile } = useProfile();
   const { data: notifications } = useNotifications(false);
   const unreadCount = notifications?.filter((n) => !n.read).length ?? 0;
+  const avatarUri = useApiImage(profile?.avatar_url);
 
   return (
     <View
@@ -137,9 +139,9 @@ export function AppHeader({ onProfilePress, onNotificationsPress }: AppHeaderPro
                 justifyContent: 'center',
               }}
             >
-              {profile?.avatar_url ? (
+              {avatarUri ? (
                 <Image
-                  source={{ uri: profile.avatar_url }}
+                  source={{ uri: avatarUri }}
                   style={{ width: 34, height: 34 }}
                   contentFit="cover"
                 />
