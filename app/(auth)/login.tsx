@@ -77,7 +77,7 @@ export default function LoginScreen() {
             AMOG TRANSIT
           </Text>
           <Text className="font-body text-sm text-text-muted text-center">
-            Votre partenaire logistique Chine — Congo
+            Votre partenaire logistique International
           </Text>
         </View>
 

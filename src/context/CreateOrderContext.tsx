@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useCallback, useContext, useState } from "react";
 
 export interface WizardProduct {
   name: string;
@@ -11,7 +11,7 @@ export interface WizardProduct {
 }
 
 export interface CreateOrderState {
-  serviceType: 'transit' | 'purchase_assisted' | null;
+  serviceType: "transit" | "purchase_assisted" | null;
   routeId: number | null;
   estimatedWeight: string;
   deliveryAddress: string;
@@ -23,16 +23,16 @@ export interface CreateOrderState {
 const initialState: CreateOrderState = {
   serviceType: null,
   routeId: null,
-  estimatedWeight: '',
-  deliveryAddress: '',
-  clientNotes: '',
+  estimatedWeight: "0",
+  deliveryAddress: "",
+  clientNotes: "",
   products: [],
   photos: [],
 };
 
 interface CreateOrderContextValue {
   state: CreateOrderState;
-  setServiceType: (v: CreateOrderState['serviceType']) => void;
+  setServiceType: (v: CreateOrderState["serviceType"]) => void;
   setRouteId: (v: number | null) => void;
   setEstimatedWeight: (v: string) => void;
   setDeliveryAddress: (v: string) => void;
@@ -40,7 +40,7 @@ interface CreateOrderContextValue {
   setProducts: (v: WizardProduct[]) => void;
   addProduct: (v: WizardProduct) => void;
   removeProduct: (index: number) => void;
-  setPhotos: (v: CreateOrderState['photos']) => void;
+  setPhotos: (v: CreateOrderState["photos"]) => void;
   addPhoto: (v: { uri: string; name: string; type: string }) => void;
   removePhoto: (index: number) => void;
   reset: () => void;
@@ -48,7 +48,11 @@ interface CreateOrderContextValue {
 
 const CreateOrderContext = createContext<CreateOrderContextValue | null>(null);
 
-export function CreateOrderProvider({ children }: { children: React.ReactNode }) {
+export function CreateOrderProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [state, setState] = useState<CreateOrderState>(initialState);
 
   const update = useCallback(
@@ -58,13 +62,19 @@ export function CreateOrderProvider({ children }: { children: React.ReactNode })
     [],
   );
 
-  const setServiceType = useCallback((v) => update('serviceType', v), [update]);
-  const setRouteId = useCallback((v) => update('routeId', v), [update]);
-  const setEstimatedWeight = useCallback((v) => update('estimatedWeight', v), [update]);
-  const setDeliveryAddress = useCallback((v) => update('deliveryAddress', v), [update]);
-  const setClientNotes = useCallback((v) => update('clientNotes', v), [update]);
-  const setProducts = useCallback((v) => update('products', v), [update]);
-  const setPhotos = useCallback((v) => update('photos', v), [update]);
+  const setServiceType = useCallback((v) => update("serviceType", v), [update]);
+  const setRouteId = useCallback((v) => update("routeId", v), [update]);
+  const setEstimatedWeight = useCallback(
+    (v) => update("estimatedWeight", v),
+    [update],
+  );
+  const setDeliveryAddress = useCallback(
+    (v) => update("deliveryAddress", v),
+    [update],
+  );
+  const setClientNotes = useCallback((v) => update("clientNotes", v), [update]);
+  const setProducts = useCallback((v) => update("products", v), [update]);
+  const setPhotos = useCallback((v) => update("photos", v), [update]);
 
   const addProduct = useCallback((product: WizardProduct) => {
     setState((prev) => ({ ...prev, products: [...prev.products, product] }));
@@ -77,12 +87,15 @@ export function CreateOrderProvider({ children }: { children: React.ReactNode })
     }));
   }, []);
 
-  const addPhoto = useCallback((photo: { uri: string; name: string; type: string }) => {
-    setState((prev) => ({
-      ...prev,
-      photos: [...prev.photos, photo].slice(0, 4),
-    }));
-  }, []);
+  const addPhoto = useCallback(
+    (photo: { uri: string; name: string; type: string }) => {
+      setState((prev) => ({
+        ...prev,
+        photos: [...prev.photos, photo].slice(0, 4),
+      }));
+    },
+    [],
+  );
 
   const removePhoto = useCallback((index: number) => {
     setState((prev) => ({
@@ -118,6 +131,7 @@ export function CreateOrderProvider({ children }: { children: React.ReactNode })
 
 export function useCreateOrder() {
   const ctx = useContext(CreateOrderContext);
-  if (!ctx) throw new Error('useCreateOrder must be used within CreateOrderProvider');
+  if (!ctx)
+    throw new Error("useCreateOrder must be used within CreateOrderProvider");
   return ctx;
 }

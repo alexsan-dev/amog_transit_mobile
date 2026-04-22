@@ -7,6 +7,7 @@ import { TabBar } from '@/src/components/navigation/TabBar';
 import { ProfileDropdown } from '@/src/components/navigation/ProfileDropdown';
 import { useAuthStore } from '@/src/stores/useAuthStore';
 import { clearToken } from '@/src/api/auth';
+import { EmailVerificationModal } from '@/src/components/EmailVerificationModal';
 
 export default function ClientLayout() {
   const router = useRouter();
@@ -46,6 +47,8 @@ export default function ClientLayout() {
         <Tabs.Screen name="security" options={{ href: null }} />
         <Tabs.Screen name="settings" options={{ href: null }} />
       </Tabs>
+
+      <EmailVerificationModal />
 
       {dropdownVisible && (
         <>

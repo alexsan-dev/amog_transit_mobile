@@ -11,16 +11,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const SERVICES = [
   {
-    key: "transit" as const,
-    label: "Transit",
-    description: "J'expedie mes propres marchandises d'un point a un autre.",
-    Icon: Truck,
-  },
-  {
     key: "purchase_assisted" as const,
     label: "Supply Chain",
     description: "J'achete des produits via AMOG et je les fais livrer.",
     Icon: ShoppingBag,
+  },
+  {
+    key: "transit" as const,
+    label: "Transit",
+    description: "J'expedie mes propres marchandises d'un point a un autre.",
+    Icon: Truck,
   },
 ];
 
@@ -51,7 +51,7 @@ export default function Step1ServiceScreen() {
         ]}
       >
         <Pressable
-          onPress={() => router.navigate('/(client)' as any)}
+          onPress={() => router.navigate("/(client)" as any)}
           hitSlop={8}
           style={styles.backBtn}
         >

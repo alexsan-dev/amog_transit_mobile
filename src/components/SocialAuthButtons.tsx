@@ -3,13 +3,12 @@ import { apiClient } from "@/src/api/client";
 import { Text } from "@/src/components/ui/Text";
 import { useAuthStore } from "@/src/stores/useAuthStore";
 import { useTheme } from "@/src/theme/ThemeProvider";
-import { Image } from "react-native";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { AlertTriangle } from "lucide-react-native";
-import React, { useState, useRef } from "react";
-import { ActivityIndicator, Pressable, View } from "react-native";
+import React, { useRef, useState } from "react";
+import { ActivityIndicator, Image, Pressable, View } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -18,11 +17,11 @@ type Provider = "google" | "tiktok";
 const PROVIDER_META: Record<Provider, { label: string; icon: string }> = {
   google: {
     label: "Continuer avec Google",
-    icon: "http://amog-transit.com/images/prepared/google.png?v=3.6",
+    icon: "http://amog-transit.com/images/prepared/google.png?v=4.6",
   },
   tiktok: {
     label: "Continuer avec TikTok",
-    icon: "http://amog-transit.com/images/prepared/tiktok.png?v=3.5",
+    icon: "http://amog-transit.com/images/prepared/tiktok.png?v=4.6",
   },
 };
 
@@ -47,7 +46,9 @@ export function SocialAuthButtons() {
         listener = null;
       }
       // Best-effort dismiss of any remaining browser session
-      try { WebBrowser.dismissBrowser(); } catch {}
+      try {
+        WebBrowser.dismissBrowser();
+      } catch {}
       setLoading(null);
     };
 
@@ -68,7 +69,7 @@ export function SocialAuthButtons() {
         setError(
           message
             ? decodeURIComponent(message)
-            : "Authentification sociale \u00e9chou\u00e9e."
+            : "Authentification sociale \u00e9chou\u00e9e.",
         );
         return;
       }
@@ -88,8 +89,7 @@ export function SocialAuthButtons() {
       } catch (err: any) {
         console.log("[OAuth handleUrl]", err.response?.data);
         setError(
-          err.response?.data?.message ??
-            "Erreur lors de la connexion sociale."
+          err.response?.data?.message ?? "Erreur lors de la connexion sociale.",
         );
       }
     };
@@ -106,10 +106,7 @@ export function SocialAuthButtons() {
       // openAuthSessionAsync is kept so the OS attempts to close the browser
       // when the deep link fires, but on Android we rely on the Linking listener
       // as the source of truth because result.type is often 'dismiss'.
-      await WebBrowser.openAuthSessionAsync(
-        url,
-        "amogtransit://auth/callback"
-      );
+      await WebBrowser.openAuthSessionAsync(url, "amogtransit://auth/callback");
 
       // If we reach here and the callback was NOT handled by the listener,
       // it means the user closed the browser manually or the flow was cancelled.
@@ -124,8 +121,7 @@ export function SocialAuthButtons() {
       } else {
         console.log("[OAuth redirect]", err.response?.data);
         setError(
-          err.response?.data?.message ??
-            "Erreur lors de la connexion sociale."
+          err.response?.data?.message ?? "Erreur lors de la connexion sociale.",
         );
       }
     }
@@ -155,10 +151,10 @@ export function SocialAuthButtons() {
                 <ActivityIndicator size="small" color={c.textMuted} />
               ) : (
                 <>
-                  <View style={{ width: 22, height: 22, margin: 5 }}>
+                  <View style={{ width: 25, height: 25, margin: 5 }}>
                     <Image
                       source={{ uri: meta.icon }}
-                      style={{ width: 25, height: 25 }}
+                      style={{ width: 22, height: 22 }}
                     />
                   </View>
                   <Text className="font-body text-sm text-text ml-2.5">

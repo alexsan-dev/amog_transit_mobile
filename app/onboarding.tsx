@@ -1,16 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Dimensions,
-  FlatList,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-  Pressable,
-  View,
-  Image
-} from "react-native";
-import { useRouter } from "expo-router";
+import { Button } from "@/src/components/ui/Button";
+import { Text } from "@/src/components/ui/Text";
 import { storageGet, storageSet } from "@/src/lib/storage";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "@/src/theme/ThemeProvider";
+import { useRouter } from "expo-router";
 import {
   Activity,
   ChevronLeft,
@@ -18,6 +10,16 @@ import {
   Globe,
   MessageSquare,
 } from "lucide-react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
+  View,
+} from "react-native";
 import Animated, {
   FadeInDown,
   useAnimatedStyle,
@@ -29,9 +31,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { Text } from "@/src/components/ui/Text";
-import { Button } from "@/src/components/ui/Button";
-import { useTheme } from "@/src/theme/ThemeProvider";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 const IMAGE_SIZE = width * 0.65;
@@ -44,21 +44,21 @@ const STEPS = [
     icon: Globe,
     title: "Votre fret, simplifié",
     body: "AMOG TRANSIT vous accompagne de la Chine ou de la France jusqu'au Congo. Aérien ou maritime, nous gérons tout.",
-    image: "https://amog-transit.com/images/prepared/slide_1.png",
+    image: "https://amog-transit.com/images/prepared/slide_1.png?v=3.6",
   },
   {
     keyword: "TRAÇABILITÉ",
     icon: Activity,
     title: "Suivi en temps réel",
     body: "Suivez chaque étape de votre colis : achat, transit, douane, livraison. Notifications push à chaque changement.",
-    image: "https://amog-transit.com/images/prepared/slide_2.png",
+    image: "https://amog-transit.com/images/prepared/slide_2.png?v=3.6",
   },
   {
     keyword: "RÉACTIVITÉ",
     icon: MessageSquare,
     title: "Support dédié",
     body: "Une question ? Un blocage ? Contactez notre équipe directement depuis l'app. Réponse garantie sous 24h.",
-    image: "https://amog-transit.com/images/prepared/slide_3.png",
+    image: "https://amog-transit.com/images/prepared/slide_3.png?v=3.6",
   },
 ];
 
@@ -143,7 +143,14 @@ function SwipeHint({ side, color }: { side: "left" | "right"; color: string }) {
         alignItems: "center",
       }}
     >
-      <View style={{ width: 40, height: 40, alignItems: "center", justifyContent: "center" }}>
+      <View
+        style={{
+          width: 40,
+          height: 40,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Animated.View
           style={[
             ringStyle,
@@ -184,7 +191,9 @@ function AnimatedDot({ isActive }: { isActive: boolean }) {
   const w = useSharedValue(isActive ? 24 : 8);
   useEffect(() => {
     w.value = isReducedMotion
-      ? (isActive ? 24 : 8)
+      ? isActive
+        ? 24
+        : 8
       : withSpring(isActive ? 24 : 8, { damping: 18, stiffness: 220 });
   }, [isActive, isReducedMotion]);
   const animStyle = useAnimatedStyle(() => ({ width: w.value }));
@@ -294,7 +303,11 @@ export default function OnboardingScreen() {
               >
                 <Image
                   source={{ uri: item.image }}
-                  style={{ width: IMAGE_SIZE, height: IMAGE_SIZE, borderRadius: 22 }}
+                  style={{
+                    width: IMAGE_SIZE,
+                    height: IMAGE_SIZE,
+                    borderRadius: 22,
+                  }}
                   contentFit="cover"
                   transition={300}
                 />
@@ -328,7 +341,11 @@ export default function OnboardingScreen() {
               elevation: 4,
             }}
           >
-            <OnboardingCardContent step={step} currentIndex={currentIndex} c={c} />
+            <OnboardingCardContent
+              step={step}
+              currentIndex={currentIndex}
+              c={c}
+            />
           </View>
         ) : (
           <Animated.View
@@ -345,7 +362,11 @@ export default function OnboardingScreen() {
               elevation: 4,
             }}
           >
-            <OnboardingCardContent step={step} currentIndex={currentIndex} c={c} />
+            <OnboardingCardContent
+              step={step}
+              currentIndex={currentIndex}
+              c={c}
+            />
           </Animated.View>
         )}
 
@@ -365,7 +386,15 @@ export default function OnboardingScreen() {
   );
 }
 
-function OnboardingCardContent({ step, currentIndex, c }: { step: typeof STEPS[0]; currentIndex: number; c: Record<string, string> }) {
+function OnboardingCardContent({
+  step,
+  currentIndex,
+  c,
+}: {
+  step: (typeof STEPS)[0];
+  currentIndex: number;
+  c: Record<string, string>;
+}) {
   const StepIcon = step.icon;
   return (
     <View className="p-5">

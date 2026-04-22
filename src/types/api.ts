@@ -25,13 +25,24 @@ export interface User {
   created_at?: string;
 }
 
+export interface RouteCountry {
+  id: number;
+  name: string;
+  code: string;
+  flag_emoji: string | null;
+}
+
 export interface ShippingRoute {
   id: number;
   name: string;
-  origin_country: string;
-  destination_country: string;
+  origin_country: RouteCountry | null;
+  destination_country: RouteCountry | null;
+  transport_mode: string;
+  city: string | null;
   transit_days_min: number | null;
   transit_days_max: number | null;
+  price_per_kg: string;
+  currency: string;
   active: boolean;
 }
 
