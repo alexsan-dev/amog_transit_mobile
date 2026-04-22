@@ -8,9 +8,17 @@
     "scheme": "amogtransit",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.amogtransit.app",
+      "buildNumber": "1"
     },
-    "android": {},
+    "android": {
+      "package": "com.amogtransit.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
     "web": {
       "output": "static",
       "bundler": "metro"
