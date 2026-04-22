@@ -3,6 +3,7 @@ import { View, Pressable } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { Home, Package, Plus, CreditCard, MessageSquare } from 'lucide-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter, usePathname } from 'expo-router';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useTheme } from '@/src/theme/ThemeProvider';
 
@@ -12,17 +13,29 @@ const FAB_SIZE = 52;
 interface TabConfig {
   name: string;
   label: string;
+  href: string;
   Icon: React.ComponentType<{ size: number; color: string; strokeWidth: number }>;
   isFab?: boolean;
 }
 
 const TABS: TabConfig[] = [
-  { name: 'index', label: 'Accueil', Icon: Home },
-  { name: 'tracking', label: 'Commandes', Icon: Package },
-  { name: 'add-order', label: 'Ajouter', Icon: Plus, isFab: true },
-  { name: 'payments', label: 'Paiements', Icon: CreditCard },
-  { name: 'tickets', label: 'Support', Icon: MessageSquare },
+  { name: 'index',     label: 'Accueil',    href: '/(client)',              Icon: Home },
+  { name: 'orders',    label: 'Commandes',  href: '/(client)/orders',       Icon: Package },
+  { name: 'add-order', label: 'Ajouter',    href: '/(client)/add-order',    Icon: Plus, isFab: true },
+  { name: 'payments',  label: 'Paiements',  href: '/(client)/payments',     Icon: CreditCard },
+  { name: 'tickets',   label: 'Support',    href: '/(client)/tickets',      Icon: MessageSquare },
 ];
+
+// Expo Router strips route groups from the pathname returned by usePathname()
+// e.g. '/(client)/orders' → '/orders', '/(client)' → '/'
+const TAB_MATCH: Record<string, string> = {
+  index:       '/',
+  orders:      '/orders',
+  'add-order': '/add-order',
+  payments:    '/payments',
+  tickets:     '/tickets',
+};
+
 
 interface TabItemProps {
   tab: TabConfig;
@@ -79,11 +92,7 @@ function RegularItem({ tab, isActive, onPress, c }: TabItemProps) {
         hitSlop={4}
         style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingBottom: 4 }}
       >
-        <tab.Icon
-          size={22}
-          color={color}
-          strokeWidth={isActive ? 2 : 1.5}
-        />
+        <tab.Icon size={22} color={color} strokeWidth={isActive ? 2 : 1.5} />
         <View style={{ marginTop: 3, alignItems: 'center' }}>
           <Animated.Text
             style={{
@@ -111,9 +120,21 @@ function RegularItem({ tab, isActive, onPress, c }: TabItemProps) {
   );
 }
 
-export function TabBar({ state, navigation }: BottomTabBarProps) {
+function isTabActive(pathname: string, tab: TabConfig): boolean {
+  const match = TAB_MATCH[tab.name];
+  if (!match) return false;
+  if (tab.name === 'index') return pathname === '/';
+  if (tab.name === 'add-order') {
+    return pathname === match || pathname.startsWith(match + '/');
+  }
+  return pathname === match || pathname.startsWith(match + '/');
+}
+
+export function TabBar({ state, descriptors }: BottomTabBarProps) {
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <View
@@ -128,25 +149,14 @@ export function TabBar({ state, navigation }: BottomTabBarProps) {
       }}
     >
       {TABS.map((tab) => {
-        const routeIndex = state.routes.findIndex((r) => r.name === tab.name);
-        const isActive = routeIndex !== -1 && routeIndex === state.index;
+        const isActive = isTabActive(pathname, tab);
 
         const onPress = () => {
-          if (routeIndex === -1) return;
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: state.routes[routeIndex].key,
-            canPreventDefault: true,
-          });
-          if (!isActive && !event.defaultPrevented) {
-            navigation.navigate(tab.name);
-          }
+          router.navigate(tab.href as any);
         };
 
         if (tab.isFab) {
-          return (
-            <FabItem key={tab.name} tab={tab} isActive={isActive} onPress={onPress} c={c} />
-          );
+          return <FabItem key={tab.name} tab={tab} isActive={isActive} onPress={onPress} c={c} />;
         }
         return (
           <RegularItem key={tab.name} tab={tab} isActive={isActive} onPress={onPress} c={c} />

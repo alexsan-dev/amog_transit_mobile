@@ -18,6 +18,7 @@ export default function ClientLayout() {
     setDropdownVisible(false);
     await clearToken();
     logout();
+    router.replace('/(auth)/login');
   };
 
   return (
@@ -35,16 +36,17 @@ export default function ClientLayout() {
         tabBar={(props) => <TabBar {...props} />}
       >
         <Tabs.Screen name="index" />
-        <Tabs.Screen name="tracking" />
+        <Tabs.Screen name="orders" />
         <Tabs.Screen name="add-order" />
         <Tabs.Screen name="payments" />
         <Tabs.Screen name="tickets" />
+        <Tabs.Screen name="tracking" options={{ href: null }} />
         <Tabs.Screen name="notifications" options={{ href: null }} />
         <Tabs.Screen name="profile" options={{ href: null }} />
         <Tabs.Screen name="security" options={{ href: null }} />
+        <Tabs.Screen name="settings" options={{ href: null }} />
       </Tabs>
 
-      {/* Dropdown overlay */}
       {dropdownVisible && (
         <>
           <Pressable
@@ -75,6 +77,10 @@ export default function ClientLayout() {
               onSecurity={() => {
                 setDropdownVisible(false);
                 router.push('/(client)/security');
+              }}
+              onSettings={() => {
+                setDropdownVisible(false);
+                router.push('/(client)/settings');
               }}
               onLogout={handleLogout}
             />

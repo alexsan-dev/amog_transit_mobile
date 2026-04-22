@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Base */
+    --color-base-100: 255 255 255;
+    --color-base-200: 244 246 250;
+    --color-base-300: 232 236 244;
+    --color-background: 244 246 250;
+    --color-surface: 255 255 255;
+    --color-surface-hover: 238 241 248;
+    --color-border: 208 216 234;
+
+    /* Brand */
+    --color-primary: 27 45 91;
+    --color-primary-light: 42 64 128;
+    --color-primary-dark: 15 26 56;
+    --color-accent: 139 26 47;
+
+    /* Text */
+    --color-text: 15 26 56;
+    --color-text-muted: 107 122 153;
+    --color-text-inverse: 255 255 255;
+    --color-text-on-primary: 255 255 255;
+
+    /* Semantic */
+    --color-success: 26 122 74;
+    --color-warning: 196 125 14;
+    --color-error: 185 28 28;
+    --color-info: 29 95 170;
+  }
+
+  .dark {
+    --color-base-100: 13 21 40;
+    --color-base-200: 18 30 56;
+    --color-base-300: 26 40 72;
+    --color-background: 13 21 40;
+    --color-surface: 18 30 56;
+    --color-surface-hover: 30 47 80;
+    --color-border: 38 58 96;
+
+    --color-primary: 58 91 168;
+    --color-primary-light: 77 114 200;
+    --color-primary-dark: 27 45 91;
+    --color-accent: 192 41 63;
+
+    --color-text: 232 236 244;
+    --color-text-muted: 122 143 173;
+    --color-text-inverse: 13 21 40;
+    --color-text-on-primary: 255 255 255;
+
+    --color-success: 34 162 94;
+    --color-warning: 224 155 42;
+    --color-error: 229 62 62;
+    --color-info: 74 144 217;
+  }
+}
