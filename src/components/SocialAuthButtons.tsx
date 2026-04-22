@@ -48,6 +48,7 @@ export function SocialAuthButtons() {
         "amogtransit://auth/callback",
       );
 
+      // On Android the deep link is handled by app/auth/callback.tsx — not an error
       if (result.type !== "success") return;
 
       const parsed = Linking.parse(result.url);

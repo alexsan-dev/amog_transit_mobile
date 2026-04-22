@@ -75,6 +75,7 @@ export default function RootLayout() {
             <Stack.Screen name="(auth)" />
             <Stack.Screen name="(client)" />
             <Stack.Screen name="(create-order)" />
+            <Stack.Screen name="auth/callback" />
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>
