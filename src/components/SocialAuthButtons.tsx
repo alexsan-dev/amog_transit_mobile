@@ -17,11 +17,11 @@ type Provider = "google" | "tiktok";
 const PROVIDER_META: Record<Provider, { label: string; icon: string }> = {
   google: {
     label: "Continuer avec Google",
-    icon: "http://amog-transit.com/images/prepared/google.png?v=4.6",
+    icon: "https://amog-transit.com/images/prepared/google.png?v=4.6",
   },
   tiktok: {
     label: "Continuer avec TikTok",
-    icon: "http://amog-transit.com/images/prepared/tiktok.png?v=4.6",
+    icon: "https://amog-transit.com/images/prepared/tiktok.png?v=4.6",
   },
 };
 
