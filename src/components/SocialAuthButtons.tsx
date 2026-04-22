@@ -1,4 +1,4 @@
-import { setToken } from "@/src/api/auth";
+import { setToken, setUser } from "@/src/api/auth";
 import { apiClient } from "@/src/api/client";
 import { Text } from "@/src/components/ui/Text";
 import { useAuthStore } from "@/src/stores/useAuthStore";
@@ -84,6 +84,7 @@ export function SocialAuthButtons() {
         const meRes = await apiClient.get("/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        await setUser(meRes.data.data);
         setAuth(token, meRes.data.data);
         router.replace("/(client)");
       } catch (err: any) {

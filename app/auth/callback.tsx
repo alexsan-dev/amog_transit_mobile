@@ -1,5 +1,5 @@
 import { apiClient } from '@/src/api/client';
-import { setToken } from '@/src/api/auth';
+import { setToken, setUser } from '@/src/api/auth';
 import { useAuthStore } from '@/src/stores/useAuthStore';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -35,6 +35,7 @@ export default function OAuthCallbackScreen() {
         const res = await apiClient.get('/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
+        await setUser(res.data.data);
         setAuth(token, res.data.data);
         router.replace('/(client)');
       } catch (err) {

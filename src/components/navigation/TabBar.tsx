@@ -134,7 +134,7 @@ export function TabBar({ state, descriptors }: BottomTabBarProps) {
   const { c } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePathname() ?? '';
 
   return (
     <View

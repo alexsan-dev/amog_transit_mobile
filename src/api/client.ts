@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { storageGet, storageDel } from '@/src/lib/storage';
+import { clearUser } from '@/src/api/auth';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'https://api.amogtransit.com';
 
@@ -25,6 +26,7 @@ apiClient.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       await storageDel('auth_token');
+      await clearUser();
     }
     console.error(`[API ${error.config?.method?.toUpperCase()} ${error.config?.url}]`, error.response?.data ?? error.message);
     return Promise.reject(error);

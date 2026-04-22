@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 // import { Image } from "react-native";
-import { setToken } from "@/src/api/auth";
+import { setToken, setUser } from "@/src/api/auth";
 import { apiClient } from "@/src/api/client";
 import { SocialAuthButtons } from "@/src/components/SocialAuthButtons";
 import { Button } from "@/src/components/ui/Button";
@@ -42,6 +42,7 @@ export default function LoginScreen() {
       const res = await apiClient.post("/auth/login", { email, password });
       const { token, user } = res.data.data;
       await setToken(token);
+      await setUser(user);
       setAuth(token, user);
       router.replace("/(client)");
     } catch (err: any) {

@@ -70,12 +70,12 @@ export default function RootLayout() {
         <ThemeProvider>
           <OfflineBanner />
           <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-            <Stack.Screen name="onboarding" />
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(client)" />
-            <Stack.Screen name="(create-order)" />
-            <Stack.Screen name="auth/callback" />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+            <Stack.Screen name="(client)" options={{ headerShown: false }} />
+            <Stack.Screen name="(create-order)" options={{ headerShown: false }} />
+            <Stack.Screen name="auth/callback" options={{ headerShown: false }} />
           </Stack>
           <StatusBar style="auto" />
         </ThemeProvider>

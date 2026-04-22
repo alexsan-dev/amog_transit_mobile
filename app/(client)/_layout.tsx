@@ -6,7 +6,7 @@ import { AppHeader } from '@/src/components/navigation/AppHeader';
 import { TabBar } from '@/src/components/navigation/TabBar';
 import { ProfileDropdown } from '@/src/components/navigation/ProfileDropdown';
 import { useAuthStore } from '@/src/stores/useAuthStore';
-import { clearToken } from '@/src/api/auth';
+import { clearToken, clearUser } from '@/src/api/auth';
 import { EmailVerificationModal } from '@/src/components/EmailVerificationModal';
 
 export default function ClientLayout() {
@@ -17,7 +17,7 @@ export default function ClientLayout() {
 
   const handleLogout = async () => {
     setDropdownVisible(false);
-    await clearToken();
+    await Promise.all([clearToken(), clearUser()]);
     logout();
     router.replace('/(auth)/login');
   };
