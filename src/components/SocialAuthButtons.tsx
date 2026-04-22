@@ -8,7 +8,7 @@ import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { AlertTriangle } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { ActivityIndicator, Pressable, View } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -32,10 +32,70 @@ export function SocialAuthButtons() {
   const { c } = useTheme();
   const [loading, setLoading] = useState<Provider | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const handledRef = useRef(false);
 
   const handleSocial = async (provider: Provider) => {
     setError(null);
     setLoading(provider);
+    handledRef.current = false;
+
+    let listener: { remove: () => void } | null = null;
+
+    const cleanup = () => {
+      if (listener) {
+        listener.remove();
+        listener = null;
+      }
+      // Best-effort dismiss of any remaining browser session
+      try { WebBrowser.dismissBrowser(); } catch {}
+      setLoading(null);
+    };
+
+    const handleUrl = async (event: { url: string }) => {
+      if (handledRef.current) return;
+
+      const parsed = Linking.parse(event.url);
+      if (parsed.path !== "auth/callback") return;
+
+      handledRef.current = true;
+      cleanup();
+
+      const token = parsed.queryParams?.token as string | undefined;
+      const oauthError = parsed.queryParams?.error as string | undefined;
+      const message = parsed.queryParams?.message as string | undefined;
+
+      if (oauthError) {
+        setError(
+          message
+            ? decodeURIComponent(message)
+            : "Authentification sociale \u00e9chou\u00e9e."
+        );
+        return;
+      }
+
+      if (!token) {
+        setError("Token manquant. Veuillez r\u00e9essayer.");
+        return;
+      }
+
+      try {
+        await setToken(token);
+        const meRes = await apiClient.get("/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAuth(token, meRes.data.data);
+        router.replace("/(client)");
+      } catch (err: any) {
+        console.log("[OAuth handleUrl]", err.response?.data);
+        setError(
+          err.response?.data?.message ??
+            "Erreur lors de la connexion sociale."
+        );
+      }
+    };
+
+    listener = Linking.addEventListener("url", handleUrl);
+
     try {
       const res = await apiClient.get(`/auth/${provider}/redirect`, {
         params: { stateless: 1 },
@@ -43,52 +103,31 @@ export function SocialAuthButtons() {
 
       const { url } = res.data.data;
 
-      const result = await WebBrowser.openAuthSessionAsync(
+      // openAuthSessionAsync is kept so the OS attempts to close the browser
+      // when the deep link fires, but on Android we rely on the Linking listener
+      // as the source of truth because result.type is often 'dismiss'.
+      await WebBrowser.openAuthSessionAsync(
         url,
-        "amogtransit://auth/callback",
+        "amogtransit://auth/callback"
       );
 
-      // On Android the deep link is handled by app/auth/callback.tsx — not an error
-      if (result.type !== "success") return;
-
-      const parsed = Linking.parse(result.url);
-      const token = parsed.queryParams?.token as string | undefined;
-      const oauthError = parsed.queryParams?.error as string | undefined;
-
-      if (oauthError) {
-        const message = parsed.queryParams?.message as string | undefined;
-        setError(
-          message ? decodeURIComponent(message) : "Authentification échouée.",
-        );
-        return;
+      // If we reach here and the callback was NOT handled by the listener,
+      // it means the user closed the browser manually or the flow was cancelled.
+      if (!handledRef.current) {
+        cleanup();
       }
-
-      if (!token) {
-        setError("Token manquant. Veuillez réessayer.");
-        return;
-      }
-
-      await setToken(token);
-
-      const meRes = await apiClient.get("/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const user = meRes.data.data;
-
-      setAuth(token, user);
-      router.replace("/(client)");
     } catch (err: any) {
+      cleanup();
       const code = err.response?.data?.code;
       if (code === "NOT_IMPLEMENTED") {
         setError("Connexion sociale non disponible pour le moment.");
       } else {
-        console.log(err.response?.data);
+        console.log("[OAuth redirect]", err.response?.data);
         setError(
-          err.response?.data?.message ?? "Erreur lors de la connexion sociale.",
+          err.response?.data?.message ??
+            "Erreur lors de la connexion sociale."
         );
       }
-    } finally {
-      setLoading(null);
     }
   };
 
