@@ -56,7 +56,10 @@ export function SocialAuthButtons() {
       if (handledRef.current) return;
 
       const parsed = Linking.parse(event.url);
-      if (parsed.path !== "auth/callback") return;
+      // Linking.parse splits 'amogtransit://auth/callback' into
+      // hostname='auth' + path='callback' — reconstruct to match.
+      const fullPath = [parsed.hostname, parsed.path].filter(Boolean).join('/');
+      if (fullPath !== 'auth/callback') return;
 
       handledRef.current = true;
       cleanup();
@@ -104,15 +107,17 @@ export function SocialAuthButtons() {
 
       const { url } = res.data.data;
 
-      // openAuthSessionAsync is kept so the OS attempts to close the browser
-      // when the deep link fires, but on Android we rely on the Linking listener
-      // as the source of truth because result.type is often 'dismiss'.
-      await WebBrowser.openAuthSessionAsync(url, "amogtransit://auth/callback");
+      // iOS (ASWebAuthenticationSession): intercepts the deep link and returns it
+      // in the result — Linking event never fires.
+      // Android: Linking event fires first; result.type is often 'dismiss'.
+      const result = await WebBrowser.openAuthSessionAsync(url, "amogtransit://auth/callback");
 
-      // If we reach here and the callback was NOT handled by the listener,
-      // it means the user closed the browser manually or the flow was cancelled.
       if (!handledRef.current) {
-        cleanup();
+        if (result.type === 'success' && result.url) {
+          await handleUrl({ url: result.url });
+        } else {
+          cleanup();
+        }
       }
     } catch (err: any) {
       cleanup();
