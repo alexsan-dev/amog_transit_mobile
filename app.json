@@ -2,7 +2,8 @@
   "expo": {
     "name": "Amog Transit",
     "slug": "amog_transit",
-    "version": "1.0.0",
+    "owner": "amog-soluces",
+    "version": "1.5.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "amogtransit",

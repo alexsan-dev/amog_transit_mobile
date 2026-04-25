@@ -3,7 +3,8 @@ import { View, Pressable, StyleSheet, ScrollView, ActivityIndicator } from 'reac
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { CheckCircle2, Truck, ShoppingBag, MapPin, Scale, FileText, Package, Image as ImageIcon } from 'lucide-react-native';
+import { CheckCircle2, Truck, ShoppingBag, MapPin, Scale, FileText, Package } from 'lucide-react-native';
+import { Image } from 'react-native';
 import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
 import { useTheme } from '@/src/theme/ThemeProvider';
@@ -53,9 +54,9 @@ export default function Step6ReviewScreen() {
         } as any);
       });
 
-      const res = await apiClient.post('/orders', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      // Do NOT set Content-Type manually — React Native sets it automatically
+      // with the correct multipart boundary. Manual override breaks file uploads.
+      const res = await apiClient.post('/orders', formData);
 
       if (res.data?.success) {
         reset();
@@ -124,9 +125,12 @@ export default function Step6ReviewScreen() {
               <Text style={{ fontFamily: 'Syne_600SemiBold', fontSize: 14, color: c.text, marginBottom: 12 }}>Photos ({state.photos.length})</Text>
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 {state.photos.map((photo, i) => (
-                  <View key={i} style={[styles.thumb, { backgroundColor: c.base200 }]}>
-                    <ImageIcon size={20} color={c.textMuted} />
-                  </View>
+                  <Image
+                    key={i}
+                    source={{ uri: photo.uri }}
+                    style={[styles.thumb, { borderRadius: 8 }]}
+                    resizeMode="cover"
+                  />
                 ))}
               </View>
             </View>

@@ -1,11 +1,24 @@
-import { useEffect, useRef } from 'react';
+import * as FileSystem from 'expo-file-system';
+import { useEffect } from 'react';
 import { View } from 'react-native';
 import { useRouter, useRootNavigationState } from 'expo-router';
 import { useAuthStore } from '@/src/stores/useAuthStore';
-import { getToken, getUser } from '@/src/api/auth';
-import { storageGet } from '@/src/lib/storage';
+import { getToken, getUser, clearToken, clearUser } from '@/src/api/auth';
+import { storageGet, storageDel } from '@/src/lib/storage';
 
 const ONBOARDING_KEY = 'has_seen_onboarding';
+
+// Stored in the app's document directory — cleared on uninstall (unlike iOS Keychain).
+// Absence of this file = fresh install → purge stale Keychain data.
+const INSTALL_MARKER = FileSystem.documentDirectory + '.install_marker';
+
+async function purgeStaleKeychainOnFreshInstall(): Promise<void> {
+  const info = await FileSystem.getInfoAsync(INSTALL_MARKER);
+  if (!info.exists) {
+    await Promise.all([clearToken(), clearUser(), storageDel(ONBOARDING_KEY)]);
+    await FileSystem.writeAsStringAsync(INSTALL_MARKER, '1');
+  }
+}
 
 export default function IndexGate() {
   const router = useRouter();
@@ -18,6 +31,9 @@ export default function IndexGate() {
 
     const init = async () => {
       try {
+        // Must run before reading Keychain — clears stale data from a previous install
+        await purgeStaleKeychainOnFreshInstall();
+
         const [token, user, hasSeen] = await Promise.all([
           getToken(),
           getUser(),
